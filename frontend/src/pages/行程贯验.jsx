@@ -14,7 +14,7 @@ export default function 行程贯验() {
   return (
     <div>
       <h1 className="题">行程贯验</h1>
-      <p className="述">校验：每笔行程对应两笔已成对刷卡；已开腿刷卡数=在途开腿。</p>
+      <p className="述">校验：每笔行程对应两笔已成对刷卡；已开腿刷卡数=在途开腿；行程两端卡号一致，多卡隔离判定全 valid。</p>
       <div className="行">
         <button onClick={跑}>跑贯验</button>
         <button className="次" onClick={刷}>刷新历史</button>
@@ -22,6 +22,7 @@ export default function 行程贯验() {
       {末 && (
         <div className="行" style={{ gap: "0.7rem" }}>
           <span className={`徽章 ${末.是否通过 ? "通" : "败"}`}>{末.是否通过 ? "对齐" : "撕裂"}</span>
+          <span className="徽章 通">隔离判定 {末.隔离判定数 ?? 0}</span>
           <span className="讯" style={{ margin: 0 }}>{末.说明}</span>
         </div>
       )}

@@ -10,6 +10,9 @@ def 总览() -> dict:
         末 = conn.execute(
             "SELECT * FROM 行程贯验 ORDER BY 编号 DESC LIMIT 1"
         ).fetchone()
+        有隔离表 = conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='多卡隔离'"
+        ).fetchone()
         return {
             "站点": c("SELECT COUNT(*) FROM 站点"),
             "刷卡点": c("SELECT COUNT(*) FROM 刷卡点"),
@@ -19,6 +22,8 @@ def 总览() -> dict:
             "在途开腿": c("SELECT COUNT(*) FROM 开腿账 WHERE 状态='在途'"),
             "行程数": c("SELECT COUNT(*) FROM 行程账 WHERE 状态='已成对'"),
             "旁路匣": c("SELECT COUNT(*) FROM 旁路匣"),
+            "跨卡旁路": c("SELECT COUNT(*) FROM 旁路匣 WHERE 原因='跨卡无开腿'"),
+            "隔离判定": c("SELECT COUNT(*) FROM 多卡隔离") if 有隔离表 else 0,
             "装载批次": c("SELECT COUNT(*) FROM 装载批次"),
             "末次贯验": dict(末) if 末 else None,
         }

@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from app.db import 夹具目录, 连接
+from app.modules import 多卡串扰隔离 as 多卡隔离
 from app.services import 装载, 贯验, 目录
 
 路由 = APIRouter(prefix="/api")
@@ -135,6 +136,29 @@ def 装夹具(名: str = "成对样例"):
 @路由.post("/贯验")
 def 做贯验():
     return 贯验.跑贯验()
+
+
+@路由.post("/多卡隔离/装载")
+def 做隔离装载(体: 装载请求):
+    return 多卡隔离.装隔离批(体.model_dump())
+
+
+@路由.post("/多卡隔离/装载/夹具")
+def 装隔离夹具(名: str = "多卡隔离-A进B出"):
+    路径 = 夹具目录 / f"{名}.json"
+    if not 路径.exists():
+        raise HTTPException(404, f"夹具不存在:{名}")
+    return 多卡隔离.装隔离批(json.loads(路径.read_text(encoding="utf-8")))
+
+
+@路由.get("/多卡隔离")
+def 列隔离(批命运: str = "", 批次编号: str = ""):
+    return 多卡隔离.隔离视图(批命运, 批次编号)
+
+
+@路由.get("/多卡隔离/架构")
+def 隔离架构():
+    return {"架构": 多卡隔离.隔离架构, "口径": 多卡隔离.口径}
 
 
 @路由.get("/贯验")

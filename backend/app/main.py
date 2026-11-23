@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from app import seed
+from app.modules import 多卡串扰隔离 as 多卡隔离
 from app.routers import api
 
 app = FastAPI(title="闸对", version="0.1.0")
@@ -16,6 +17,7 @@ _STATIC = Path(__file__).resolve().parent / "static"
 @app.on_event("startup")
 def _启动():
     seed.初始化库()
+    多卡隔离.确保隔离库()
 
 
 app.include_router(api)

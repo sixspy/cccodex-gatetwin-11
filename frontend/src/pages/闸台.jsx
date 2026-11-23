@@ -22,6 +22,12 @@ export default function 闸台() {
         <div className="阶"><div className="序">④ 旁路</div><b>{数.旁路匣 ?? 0}</b><span>旁路匣</span></div>
         <div className="阶"><div className="序">⑤ 成对刷卡</div><b>{数.已成对 ?? 0}</b><span>命运=已成对</span></div>
       </div>
+      <div className="行" style={{ gap: "0.7rem" }}>
+        <span>多卡隔离〔甲·跨卡出站旁路〕</span>
+        <span className="徽章 通">隔离判定 {数.隔离判定 ?? 0}</span>
+        <span className={`徽章 ${数.跨卡旁路 ? "败" : "通"}`}>跨卡无开腿旁路 {数.跨卡旁路 ?? 0}</span>
+        <Link to="/多卡隔离">隔离视图 →</Link>
+      </div>
       <div className="提示条">
         冒烟：<Link to="/刷卡流">刷卡流</Link> 依次推成对 / 缺腿超时 / 出站孤儿 → 看开腿账与行程账 →{" "}
         <Link to="/行程贯验">行程贯验</Link>。

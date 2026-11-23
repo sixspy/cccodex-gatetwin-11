@@ -43,6 +43,24 @@ def 跑贯验() -> dict:
         if 开腿刷 != 开腿数:
             问题.append(f"已开腿刷卡{开腿刷} ≠ 在途开腿{开腿数}")
 
+        # 多卡隔离协同:行程两端卡号互查(跨卡不得成对) + 隔离判定 valid 全通
+        跨卡行程 = conn.execute(
+            """SELECT COUNT(*) FROM 行程账 t
+               JOIN 刷卡点 a ON a.事件编号=t.进站事件编号
+               JOIN 刷卡点 b ON b.事件编号=t.出站事件编号
+               WHERE a.卡号<>b.卡号"""
+        ).fetchone()[0]
+        if 跨卡行程:
+            问题.append(f"跨卡成对行程{跨卡行程}笔(两端卡号不一致)")
+        隔离判定数 = 0
+        if conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='多卡隔离'"
+        ).fetchone():
+            隔离判定数 = conn.execute("SELECT COUNT(*) FROM 多卡隔离").fetchone()[0]
+            坏 = conn.execute("SELECT COUNT(*) FROM 多卡隔离 WHERE valid=0").fetchone()[0]
+            if 坏:
+                问题.append(f"多卡隔离valid=0判定{坏}笔(写闸拦截未闭)")
+
         通过 = 1 if not 问题 else 0
         说明 = "行程账与刷卡点互证通过" if 通过 else "；".join(问题)[:800]
         conn.execute(
@@ -57,6 +75,7 @@ def 跑贯验() -> dict:
             "行程数": len(行程),
             "开腿数": 开腿数,
             "旁路数": 旁路数,
+            "隔离判定数": 隔离判定数,
             "说明": 说明,
             "问题": 问题,
         }
